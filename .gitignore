@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# Python local server cache
+__pycache__/
