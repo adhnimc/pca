@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCA: Raw vs Rank</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 0; background: #f7f7f9; color: #1f2937; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+    h1 { margin-top: 0; }
+    code, pre { background: #f3f4f6; border-radius: 8px; }
+    code { padding: 2px 6px; }
+    pre { padding: 12px; overflow: auto; }
+    ul { line-height: 1.6; }
+    .muted { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>PCA: raw values vs rank PCA</h1>
+      <p class="muted">Repository bootstrap committed from ChatGPT.</p>
+      <p>This repo is for an interactive project comparing:</p>
+      <ul>
+        <li>PCA on scaled raw values</li>
+        <li>PCA on ranked values (Spearman-style PCA)</li>
+      </ul>
+      <p>The fuller interactive prototype currently exists in the local working artifact and can be moved into this repo in the next commit/refactor.</p>
+    </div>
+
+    <div class="card">
+      <h2>Planned features</h2>
+      <ul>
+        <li>Simulated dataset with controls for noise, nonlinearity, and outliers</li>
+        <li>Real dataset mode</li>
+        <li>PC1 and PC2 score comparisons</li>
+        <li>Raw PCA and rank PCA biplots</li>
+        <li>Pearson vs Spearman correlation heatmaps</li>
+        <li>Loadings table</li>
+        <li>CSV upload</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>How to run later</h2>
+      <pre><code>cd app
+python3 -m http.server 8000</code></pre>
+      <p>Then open <code>http://localhost:8000</code>.</p>
+    </div>
+  </div>
+</body>
+</html>
