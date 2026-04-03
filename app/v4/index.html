@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive PCA: Raw vs Rank with Real Data</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Interactive PCA: scaled raw values vs ranked values</h1>
+    <div class="sub">
+      This version keeps the fuller UI with simulated controls plus real built-in datasets.
+      It compares <b>PCA on scaled raw values</b> with <b>PCA on ranked values</b> (Spearman-style PCA), then shows score agreement, biplots, and Pearson vs Spearman correlation heatmaps.
+    </div>
+
+    <div class="grid">
+      <div class="card controls">
+        <h2>Controls</h2>
+
+        <div class="control">
+          <label for="datasetMode">Dataset</label>
+          <select id="datasetMode">
+            <option value="simulated">Simulated</option>
+            <option value="iris">Real: Iris</option>
+            <option value="wine">Real: Wine</option>
+            <option value="breast_cancer">Real: Breast Cancer Wisconsin</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="n">Observations (simulated only)</label>
+          <div class="row">
+            <input id="n" type="range" min="80" max="700" step="10" value="350" />
+            <input id="n_num" type="number" min="80" max="700" step="10" value="350" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="noise">Noise level (simulated only)</label>
+          <div class="row">
+            <input id="noise" type="range" min="0.05" max="1.20" step="0.05" value="0.35" />
+            <input id="noise_num" type="number" min="0.05" max="1.20" step="0.05" value="0.35" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="nonlinear">Nonlinearity strength (simulated only)</label>
+          <div class="row">
+            <input id="nonlinear" type="range" min="0.00" max="1.60" step="0.05" value="0.70" />
+            <input id="nonlinear_num" type="number" min="0.00" max="1.60" step="0.05" value="0.70" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="outliers">Number of outliers (simulated only)</label>
+          <div class="row">
+            <input id="outliers" type="range" min="0" max="40" step="1" value="10" />
+            <input id="outliers_num" type="number" min="0" max="40" step="1" value="10" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="outlierStrength">Outlier strength (simulated only)</label>
+          <div class="row">
+            <input id="outlierStrength" type="range" min="0.0" max="12.0" step="0.5" value="6.0" />
+            <input id="outlierStrength_num" type="number" min="0.0" max="12.0" step="0.5" value="6.0" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="seed">Seed (simulated only)</label>
+          <div class="row">
+            <input id="seed" type="range" min="1" max="999" step="1" value="42" />
+            <input id="seed_num" type="number" min="1" max="999" step="1" value="42" />
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <label><input id="colorSpecial" type="checkbox" checked /> Color outliers / classes</label>
+          <label><input id="showLabels" type="checkbox" checked /> Show loading labels</label>
+        </div>
+
+        <button id="rerun">Update</button>
+        <button id="presetLinear">Mostly linear</button>
+        <button id="presetNonlinear">Monotone nonlinear</button>
+        <button id="presetOutliers">Outlier-heavy</button>
+
+        <div class="note" id="datasetNote">
+          Simulated mode creates random data with one hidden driver, noise, nonlinearity, and optional outliers.
+        </div>
+
+        <div class="small" style="margin-top:12px;">
+          For real datasets, the simulation sliders are ignored. If a real dataset has class labels, the points are colored by class so you can see whether raw PCA and rank PCA preserve the same structure.
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <div class="card viz full">
+          <h2 id="activeTitle">Score agreement across methods</h2>
+          <div id="metaPills" style="margin-bottom:10px;"></div>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Corr(PC1 raw, PC1 rank)</div>
+              <div class="value" id="corrPC1Val">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Corr(PC2 raw, PC2 rank)</div>
+              <div class="value" id="corrPC2Val">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Raw PCA variance explained (PC1, PC2)</div>
+              <div class="value" id="rawVarVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Rank PCA variance explained (PC1, PC2)</div>
+              <div class="value" id="rankVarVal">—</div>
+            </div>
+          </div>
+          <div class="main-grid">
+            <div>
+              <svg id="scatterPC1" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="captionPC1"></div>
+            </div>
+            <div>
+              <svg id="scatterPC2" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="captionPC2"></div>
+            </div>
+          </div>
+          <div class="legend" id="legendRow"></div>
+        </div>
+
+        <div class="card viz">
+          <h2>Raw PCA biplot</h2>
+          <svg id="biplotRaw" viewBox="0 0 700 520"></svg>
+          <div class="caption" id="captionRawBiplot"></div>
+        </div>
+
+        <div class="card viz">
+          <h2>Rank / Spearman-style PCA biplot</h2>
+          <svg id="biplotRank" viewBox="0 0 700 520"></svg>
+          <div class="caption" id="captionRankBiplot"></div>
+        </div>
+
+        <div class="card viz">
+          <h2>Pearson correlation heatmap</h2>
+          <svg id="heatPearson" viewBox="0 0 620 560"></svg>
+          <div class="caption">Correlation matrix from the original variables after standardization.</div>
+        </div>
+
+        <div class="card viz">
+          <h2>Spearman correlation heatmap</h2>
+          <svg id="heatSpearman" viewBox="0 0 620 560"></svg>
+          <div class="caption">Pearson correlation computed after ranking each variable.</div>
+        </div>
+
+        <div class="card table-card full">
+          <h2>Loadings comparison</h2>
+          <table id="loadingsTable">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Raw PC1</th>
+                <th>Raw PC2</th>
+                <th>Rank PC1</th>
+                <th>Rank PC2</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="iris.js"></script>
+<script src="wine.js"></script>
+<script src="breast_cancer.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
