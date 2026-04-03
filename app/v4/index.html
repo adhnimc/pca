@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interactive PCA: Raw vs Rank with Real Data</title>
+  <title>PCA Learning Tool: Raw, Rank, Distance, Clustering, Models</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="wrap">
-    <h1>Interactive PCA: scaled raw values vs ranked values</h1>
+    <h1>Interactive multivariate learning tool: PCA, distance, clustering, MDS, models</h1>
     <div class="sub">
-      Yes — the earlier version used simulated random data. This version lets you switch between <b>simulated data</b> and a few <b>real built-in datasets</b>.
-      It compares <b>PCA on scaled raw values</b> with <b>PCA on ranked values</b> (Spearman-style PCA), then shows score agreement, biplots, and Pearson vs Spearman correlation heatmaps.
+      This keeps the original <b>raw-value PCA vs rank PCA</b> app and expands it into a broader syllabus tool. You can compare
+      <b>scaled raw values</b> with <b>ranked values</b>, then move into <b>distance structure</b>, <b>MDS</b>, <b>clustering</b>,
+      <b>supervised models</b>, <b>validation</b>, <b>factor analysis</b>, and a small <b>correspondence analysis</b> demo.
     </div>
 
     <div class="grid">
@@ -69,10 +70,101 @@
         </div>
 
         <div class="control">
-          <label for="seed">Seed (simulated only)</label>
+          <label for="seed">Simulation seed</label>
           <div class="row">
             <input id="seed" type="range" min="1" max="999" step="1" value="42" />
             <input id="seed_num" type="number" min="1" max="999" step="1" value="42" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="analysisSeed">Analysis seed</label>
+          <div class="row">
+            <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
+            <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="distanceMetric">Distance explorer focus</label>
+          <select id="distanceMetric">
+            <option value="euclidean">Euclidean</option>
+            <option value="manhattan">Manhattan</option>
+            <option value="pearson">Pearson / correlation distance</option>
+            <option value="spearman">Spearman / rank distance</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="heatmapSize">Distance heatmap sample size</label>
+          <div class="row">
+            <input id="heatmapSize" type="range" min="12" max="40" step="2" value="20" />
+            <input id="heatmapSize_num" type="number" min="12" max="40" step="2" value="20" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="analysisSubset">MDS / clustering sample size</label>
+          <div class="row">
+            <input id="analysisSubset" type="range" min="30" max="120" step="5" value="80" />
+            <input id="analysisSubset_num" type="number" min="30" max="120" step="5" value="80" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="pcCount">Reduced-space component count</label>
+          <div class="row">
+            <input id="pcCount" type="range" min="2" max="5" step="1" value="3" />
+            <input id="pcCount_num" type="number" min="2" max="5" step="1" value="3" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="clusterMethod">Clustering method</label>
+          <select id="clusterMethod">
+            <option value="kmeans">K-means</option>
+            <option value="hierarchical">Hierarchical</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="clusterSpace">Clustering feature space</label>
+          <select id="clusterSpace">
+            <option value="original">Original scaled variables</option>
+            <option value="raw_pcs">Raw PCA scores</option>
+            <option value="rank_pcs">Rank PCA scores</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="clusterK">Number of clusters</label>
+          <div class="row">
+            <input id="clusterK" type="range" min="2" max="6" step="1" value="3" />
+            <input id="clusterK_num" type="number" min="2" max="6" step="1" value="3" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="validationMode">Validation mode</label>
+          <select id="validationMode">
+            <option value="holdout">Train / test split</option>
+            <option value="cv">k-fold cross-validation</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="testFraction">Test fraction (holdout only)</label>
+          <div class="row">
+            <input id="testFraction" type="range" min="0.15" max="0.40" step="0.05" value="0.25" />
+            <input id="testFraction_num" type="number" min="0.15" max="0.40" step="0.05" value="0.25" />
+          </div>
+        </div>
+
+        <div class="control">
+          <label for="cvFolds">CV folds</label>
+          <div class="row">
+            <input id="cvFolds" type="range" min="3" max="8" step="1" value="5" />
+            <input id="cvFolds_num" type="number" min="3" max="8" step="1" value="5" />
           </div>
         </div>
 
@@ -87,18 +179,40 @@
         <button id="presetOutliers">Outlier-heavy</button>
 
         <div class="note" id="datasetNote">
-          Simulated mode creates random data with one hidden driver, noise, nonlinearity, and optional outliers.
+          Simulated mode creates random data with one hidden driver, noise, monotone nonlinearity, and optional injected outliers.
         </div>
 
         <div class="small" style="margin-top:12px;">
-          For real datasets, the simulation sliders are ignored. If a real dataset has class labels, the points are colored by class so you can see whether raw PCA and rank PCA preserve the same structure.
+          The new distance, MDS, and clustering sections may use a reproducible subset when the active dataset is large, so the static app stays responsive.
         </div>
       </div>
 
-      <div class="main-grid">
-        <div class="card viz full">
-          <h2 id="activeTitle">Score agreement across methods</h2>
-          <div id="metaPills" style="margin-bottom:10px;"></div>
+      <div class="content-stack">
+        <div class="card nav-card">
+          <h2>Navigation</h2>
+          <div class="nav-links">
+            <a href="#pcaCore">PCA core</a>
+            <a href="#distanceExplorer">Distance explorer</a>
+            <a href="#mdsSection">MDS</a>
+            <a href="#clusteringSection">Clustering</a>
+            <a href="#supervisedSection">Supervised models</a>
+            <a href="#factorSection">Factor analysis</a>
+            <a href="#caSection">Correspondence analysis</a>
+          </div>
+        </div>
+
+        <section id="pcaCore" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>PCA core: raw values vs rank PCA</h2>
+              <p class="section-copy">
+                This is the original app content. It compares PCA on standardized raw values with PCA after ranking each variable across observations.
+                Raw PCA is sensitive to magnitudes and extreme points. Rank PCA is closer to a Spearman-style view, so ordering matters more than spacing.
+              </p>
+            </div>
+            <div id="metaPills"></div>
+          </div>
+
           <div class="stats">
             <div class="stat">
               <div class="label">Corr(PC1 raw, PC1 rank)</div>
@@ -108,73 +222,416 @@
               <div class="label">Corr(PC2 raw, PC2 rank)</div>
               <div class="value" id="corrPC2Val">—</div>
             </div>
-            <div class="stat">
-              <div class="label">Raw PCA variance explained (PC1, PC2)</div>
-              <div class="value" id="rawVarVal">—</div>
+            <div class="labelled-stat">
+              <div class="stat">
+                <div class="label">Raw PCA variance explained (PC1, PC2)</div>
+                <div class="value" id="rawVarVal">—</div>
+              </div>
             </div>
-            <div class="stat">
-              <div class="label">Rank PCA variance explained (PC1, PC2)</div>
-              <div class="value" id="rankVarVal">—</div>
+            <div class="labelled-stat">
+              <div class="stat">
+                <div class="label">Rank PCA variance explained (PC1, PC2)</div>
+                <div class="value" id="rankVarVal">—</div>
+              </div>
             </div>
           </div>
-          <div class="main-grid">
-            <div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3 id="activeTitle">Score agreement across methods</h3>
               <svg id="scatterPC1" viewBox="0 0 700 500"></svg>
               <div class="caption" id="captionPC1"></div>
             </div>
-            <div>
+            <div class="panel">
+              <h3>PC2 agreement</h3>
               <svg id="scatterPC2" viewBox="0 0 700 500"></svg>
               <div class="caption" id="captionPC2"></div>
             </div>
           </div>
+
           <div class="legend" id="legendRow"></div>
-        </div>
 
-        <div class="card viz">
-          <h2>Raw PCA biplot</h2>
-          <svg id="biplotRaw" viewBox="0 0 700 520"></svg>
-          <div class="caption" id="captionRawBiplot"></div>
-        </div>
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Raw PCA biplot</h3>
+              <svg id="biplotRaw" viewBox="0 0 700 520"></svg>
+              <div class="caption" id="captionRawBiplot"></div>
+            </div>
+            <div class="panel">
+              <h3>Rank / Spearman-style PCA biplot</h3>
+              <svg id="biplotRank" viewBox="0 0 700 520"></svg>
+              <div class="caption" id="captionRankBiplot"></div>
+            </div>
+          </div>
 
-        <div class="card viz">
-          <h2>Rank / Spearman-style PCA biplot</h2>
-          <svg id="biplotRank" viewBox="0 0 700 520"></svg>
-          <div class="caption" id="captionRankBiplot"></div>
-        </div>
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Pearson correlation heatmap</h3>
+              <svg id="heatPearson" viewBox="0 0 620 560"></svg>
+              <div class="caption">Correlation matrix from standardized raw variables.</div>
+            </div>
+            <div class="panel">
+              <h3>Spearman correlation heatmap</h3>
+              <svg id="heatSpearman" viewBox="0 0 620 560"></svg>
+              <div class="caption">Pearson correlation computed after ranking each variable first.</div>
+            </div>
+          </div>
 
-        <div class="card viz">
-          <h2>Pearson correlation heatmap</h2>
-          <svg id="heatPearson" viewBox="0 0 620 560"></svg>
-          <div class="caption">Correlation matrix from the original variables after standardization.</div>
-        </div>
+          <div class="panel">
+            <h3>Loadings comparison</h3>
+            <table id="loadingsTable">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Raw PC1</th>
+                  <th>Raw PC2</th>
+                  <th>Rank PC1</th>
+                  <th>Rank PC2</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
 
-        <div class="card viz">
-          <h2>Spearman correlation heatmap</h2>
-          <svg id="heatSpearman" viewBox="0 0 620 560"></svg>
-          <div class="caption">Pearson correlation computed after ranking each variable.</div>
-        </div>
+        <section id="distanceExplorer" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Distance explorer</h2>
+              <p class="section-copy">
+                Distances describe how far observations are from each other before any low-dimensional projection. This section compares raw-value structure with rank-based structure.
+                Euclidean and Manhattan focus on coordinate differences. Correlation distance focuses on shape rather than level.
+              </p>
+            </div>
+          </div>
 
-        <div class="card table-card full">
-          <h2>Loadings comparison</h2>
-          <table id="loadingsTable">
-            <thead>
-              <tr>
-                <th>Variable</th>
-                <th>Raw PC1</th>
-                <th>Raw PC2</th>
-                <th>Rank PC1</th>
-                <th>Rank PC2</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Selected metric</div>
+              <div class="value small-value" id="distanceMetricVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Corr(raw distances, rank distances)</div>
+              <div class="value" id="distanceCorrVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Mean absolute pairwise change</div>
+              <div class="value" id="distanceShiftVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Structure note</div>
+              <div class="value small-value" id="distanceClassVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3 id="distanceRawTitle">Raw-distance heatmap</h3>
+              <svg id="distanceHeatRaw" viewBox="0 0 620 560"></svg>
+              <div class="caption" id="distanceRawCaption"></div>
+            </div>
+            <div class="panel">
+              <h3 id="distanceRankTitle">Rank-distance heatmap</h3>
+              <svg id="distanceHeatRank" viewBox="0 0 620 560"></svg>
+              <div class="caption" id="distanceRankCaption"></div>
+            </div>
+          </div>
+
+          <div class="note" id="distanceExplain">—</div>
+        </section>
+
+        <section id="mdsSection" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Classical MDS</h2>
+              <p class="section-copy">
+                Classical multidimensional scaling starts from a distance matrix and places points so that distances in 2D stay as faithful as possible.
+                PCA starts from variables and variance. MDS starts from distances and geometry.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Raw MDS distance fit</div>
+              <div class="value" id="mdsRawFitVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Raw PCA distance fit</div>
+              <div class="value" id="mdsRawPcaFitVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Rank-distance MDS fit</div>
+              <div class="value" id="mdsRankFitVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Rank PCA distance fit</div>
+              <div class="value" id="mdsRankPcaFitVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Raw-distance MDS plot</h3>
+              <svg id="mdsRaw" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="mdsRawCaption"></div>
+            </div>
+            <div class="panel">
+              <h3>Rank / correlation-distance MDS plot</h3>
+              <svg id="mdsRank" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="mdsRankCaption"></div>
+            </div>
+          </div>
+
+          <div class="note" id="mdsExplain">—</div>
+        </section>
+
+        <section id="clusteringSection" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Clustering</h2>
+              <p class="section-copy">
+                Clustering groups observations without using the class labels. You can cluster the original scaled variables, the raw PCA scores, or the rank PCA scores,
+                then check whether the groups stay stable across projections.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Method / space</div>
+              <div class="value small-value" id="clusterMethodVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Average silhouette</div>
+              <div class="value" id="clusterSilhouetteVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Within-cluster SSE</div>
+              <div class="value" id="clusterSseVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Agreement with labels (ARI)</div>
+              <div class="value" id="clusterAriVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Clusters shown in raw PCA space</h3>
+              <svg id="clusterRawPlot" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="clusterRawCaption"></div>
+            </div>
+            <div class="panel">
+              <h3>Clusters shown in rank PCA space</h3>
+              <svg id="clusterRankPlot" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="clusterRankCaption"></div>
+            </div>
+          </div>
+
+          <div class="legend" id="clusterLegend"></div>
+
+          <div class="panel">
+            <h3>Cluster sizes</h3>
+            <table id="clusterTable">
+              <thead>
+                <tr>
+                  <th>Cluster</th>
+                  <th>Size</th>
+                  <th>Majority label</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="note" id="clusterExplain">—</div>
+        </section>
+
+        <section id="supervisedSection" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Supervised models and validation</h2>
+              <p class="section-copy">
+                This compares simple classifiers on the original variables, the first <span id="pcCountInline">3</span> raw PCs, and the first <span id="pcCountInline2">3</span> rank PCs.
+                The same analysis seed drives splitting, fold assignment, and randomized initialisation so the comparisons are reproducible.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Best accuracy</div>
+              <div class="value" id="supervisedBestAccVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Best macro F1</div>
+              <div class="value" id="supervisedBestF1Val">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Validation setup</div>
+              <div class="value small-value" id="supervisedValidationVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Best model / representation</div>
+              <div class="value small-value" id="supervisedBestModelVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Model comparison table</h3>
+            <table id="supervisedTable">
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Representation</th>
+                  <th>Accuracy</th>
+                  <th>Macro F1</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Readable variable importance</h3>
+              <table id="xaiTable">
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Logistic importance</th>
+                    <th>Tree importance</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="panel">
+              <h3>Interpretation notes</h3>
+              <div class="note large-note" id="xaiSummary">—</div>
+            </div>
+          </div>
+
+          <div class="note" id="supervisedExplain">—</div>
+        </section>
+
+        <section id="factorSection" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Factor analysis vs PCA</h2>
+              <p class="section-copy">
+                PCA explains total variance. Factor analysis tries to explain shared variance through latent common factors.
+                This section uses a small two-factor principal-axis style approximation so you can compare the loading patterns directly.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Mean communality</div>
+              <div class="value" id="factorCommunalityVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Largest uniqueness</div>
+              <div class="value" id="factorUniquenessVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Variables compared</div>
+              <div class="value" id="factorVariableVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Focus</div>
+              <div class="value small-value" id="factorFocusVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>PCA variable map</h3>
+              <svg id="factorPcaMap" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="factorPcaCaption"></div>
+            </div>
+            <div class="panel">
+              <h3>Factor-analysis loading map</h3>
+              <svg id="factorFaMap" viewBox="0 0 700 500"></svg>
+              <div class="caption" id="factorFaCaption"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>PCA vs factor loadings</h3>
+            <table id="factorTable">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>PCA 1</th>
+                  <th>PCA 2</th>
+                  <th>Factor 1</th>
+                  <th>Factor 2</th>
+                  <th>Uniqueness</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="note" id="factorExplain">—</div>
+        </section>
+
+        <section id="caSection" class="card topic-section">
+          <div class="section-head">
+            <div>
+              <h2>Correspondence analysis demo</h2>
+              <p class="section-copy">
+                Correspondence analysis is for contingency tables, not continuous variable matrices. It is useful when both rows and columns are categorical and you want a low-dimensional map of association patterns.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Demo table</div>
+              <div class="value small-value" id="caNameVal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Axis 1 inertia</div>
+              <div class="value" id="caAxis1Val">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Axis 2 inertia</div>
+              <div class="value" id="caAxis2Val">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">When to use CA</div>
+              <div class="value small-value" id="caUseVal">—</div>
+            </div>
+          </div>
+
+          <div class="panel-grid two-col">
+            <div class="panel">
+              <h3>Row / column map</h3>
+              <svg id="caMap" viewBox="0 0 700 500"></svg>
+              <div class="legend" id="caLegend"></div>
+              <div class="caption" id="caCaption"></div>
+            </div>
+            <div class="panel">
+              <h3>Contingency table</h3>
+              <table id="caTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="note" id="caExplain">—</div>
+        </section>
       </div>
     </div>
   </div>
-<script src="data/iris.js"></script>
-<script src="data/wine.js"></script>
-<script src="data/breast_cancer.js"></script>
-<script src="script.js"></script>
+  <script src="data/iris.js"></script>
+  <script src="data/wine.js"></script>
+  <script src="data/breast_cancer.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
