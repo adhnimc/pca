@@ -18,165 +18,184 @@
     <div class="grid">
       <div class="card controls">
         <h2>Controls</h2>
-
-        <div class="control">
-          <label for="datasetMode">Dataset</label>
-          <select id="datasetMode">
-            <option value="simulated">Simulated</option>
-            <option value="iris">Real: Iris</option>
-            <option value="wine">Real: Wine</option>
-            <option value="breast_cancer">Real: Breast Cancer Wisconsin</option>
-          </select>
+        <div class="note tip-note" id="exploreGuide">
+          Start with PCA core, then move to Distance Explorer and MDS to see geometry, then use Clustering and Supervised Models to test whether the same structure is useful for grouping and prediction.
         </div>
 
-        <div class="control">
-          <label for="n">Observations (simulated only)</label>
-          <div class="row">
-            <input id="n" type="range" min="80" max="700" step="10" value="350" />
-            <input id="n_num" type="number" min="80" max="700" step="10" value="350" />
+        <div class="control-group">
+          <div class="group-title">Data and setup</div>
+
+          <div class="control">
+            <label for="datasetMode">Dataset</label>
+            <select id="datasetMode">
+              <option value="simulated">Simulated</option>
+              <option value="iris">Real: Iris</option>
+              <option value="wine">Real: Wine</option>
+              <option value="breast_cancer">Real: Breast Cancer Wisconsin</option>
+            </select>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="n">Observations (simulated only)</label>
+            <div class="row">
+              <input id="n" type="range" min="80" max="700" step="10" value="350" />
+              <input id="n_num" type="number" min="80" max="700" step="10" value="350" />
+            </div>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="noise">Noise level (simulated only)</label>
+            <div class="row">
+              <input id="noise" type="range" min="0.05" max="1.20" step="0.05" value="0.35" />
+              <input id="noise_num" type="number" min="0.05" max="1.20" step="0.05" value="0.35" />
+            </div>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="nonlinear">Nonlinearity strength (simulated only)</label>
+            <div class="row">
+              <input id="nonlinear" type="range" min="0.00" max="1.60" step="0.05" value="0.70" />
+              <input id="nonlinear_num" type="number" min="0.00" max="1.60" step="0.05" value="0.70" />
+            </div>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="outliers">Number of outliers (simulated only)</label>
+            <div class="row">
+              <input id="outliers" type="range" min="0" max="40" step="1" value="10" />
+              <input id="outliers_num" type="number" min="0" max="40" step="1" value="10" />
+            </div>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="outlierStrength">Outlier strength (simulated only)</label>
+            <div class="row">
+              <input id="outlierStrength" type="range" min="0.0" max="12.0" step="0.5" value="6.0" />
+              <input id="outlierStrength_num" type="number" min="0.0" max="12.0" step="0.5" value="6.0" />
+            </div>
+          </div>
+
+          <div class="control sim-only" data-control-group="simulated">
+            <label for="seed">Simulation seed</label>
+            <div class="row">
+              <input id="seed" type="range" min="1" max="999" step="1" value="42" />
+              <input id="seed_num" type="number" min="1" max="999" step="1" value="42" />
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="analysisSeed">Analysis seed</label>
+            <div class="row">
+              <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
+              <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <label><input id="colorSpecial" type="checkbox" checked /> Color outliers / classes</label>
+            <label><input id="showLabels" type="checkbox" checked /> Show loading labels</label>
+          </div>
+
+          <button id="rerun">Update</button>
+          <button id="presetLinear">Mostly linear</button>
+          <button id="presetNonlinear">Monotone nonlinear</button>
+          <button id="presetOutliers">Outlier-heavy</button>
+        </div>
+
+        <div class="control-group">
+          <div class="group-title">Distance and geometry</div>
+
+          <div class="control">
+            <label for="distanceMetric">Distance explorer focus</label>
+            <select id="distanceMetric">
+              <option value="euclidean">Euclidean</option>
+              <option value="manhattan">Manhattan</option>
+              <option value="pearson">Pearson / correlation distance</option>
+              <option value="spearman">Spearman / rank distance</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="heatmapSize">Distance heatmap sample size</label>
+            <div class="row">
+              <input id="heatmapSize" type="range" min="12" max="40" step="2" value="20" />
+              <input id="heatmapSize_num" type="number" min="12" max="40" step="2" value="20" />
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="analysisSubset">MDS / clustering sample size</label>
+            <div class="row">
+              <input id="analysisSubset" type="range" min="30" max="120" step="5" value="80" />
+              <input id="analysisSubset_num" type="number" min="30" max="120" step="5" value="80" />
+            </div>
           </div>
         </div>
 
-        <div class="control">
-          <label for="noise">Noise level (simulated only)</label>
-          <div class="row">
-            <input id="noise" type="range" min="0.05" max="1.20" step="0.05" value="0.35" />
-            <input id="noise_num" type="number" min="0.05" max="1.20" step="0.05" value="0.35" />
+        <div class="control-group">
+          <div class="group-title">Clustering and reduced spaces</div>
+
+          <div class="control">
+            <label for="pcCount">Reduced-space component count</label>
+            <div class="row">
+              <input id="pcCount" type="range" min="2" max="5" step="1" value="3" />
+              <input id="pcCount_num" type="number" min="2" max="5" step="1" value="3" />
+            </div>
+          </div>
+
+          <div class="control">
+            <label for="clusterMethod">Clustering method</label>
+            <select id="clusterMethod">
+              <option value="kmeans">K-means</option>
+              <option value="hierarchical">Hierarchical</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="clusterSpace">Clustering feature space</label>
+            <select id="clusterSpace">
+              <option value="original">Original scaled variables</option>
+              <option value="raw_pcs">Raw PCA scores</option>
+              <option value="rank_pcs">Rank PCA scores</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="clusterK">Number of clusters</label>
+            <div class="row">
+              <input id="clusterK" type="range" min="2" max="6" step="1" value="3" />
+              <input id="clusterK_num" type="number" min="2" max="6" step="1" value="3" />
+            </div>
           </div>
         </div>
 
-        <div class="control">
-          <label for="nonlinear">Nonlinearity strength (simulated only)</label>
-          <div class="row">
-            <input id="nonlinear" type="range" min="0.00" max="1.60" step="0.05" value="0.70" />
-            <input id="nonlinear_num" type="number" min="0.00" max="1.60" step="0.05" value="0.70" />
+        <div class="control-group">
+          <div class="group-title">Supervised evaluation</div>
+
+          <div class="control">
+            <label for="validationMode">Validation mode</label>
+            <select id="validationMode">
+              <option value="holdout">Train / test split</option>
+              <option value="cv">k-fold cross-validation</option>
+            </select>
+          </div>
+
+          <div class="control validation-holdout" data-control-group="holdout">
+            <label for="testFraction">Test fraction (holdout only)</label>
+            <div class="row">
+              <input id="testFraction" type="range" min="0.15" max="0.40" step="0.05" value="0.25" />
+              <input id="testFraction_num" type="number" min="0.15" max="0.40" step="0.05" value="0.25" />
+            </div>
+          </div>
+
+          <div class="control validation-cv" data-control-group="cv">
+            <label for="cvFolds">CV folds</label>
+            <div class="row">
+              <input id="cvFolds" type="range" min="3" max="8" step="1" value="5" />
+              <input id="cvFolds_num" type="number" min="3" max="8" step="1" value="5" />
+            </div>
           </div>
         </div>
-
-        <div class="control">
-          <label for="outliers">Number of outliers (simulated only)</label>
-          <div class="row">
-            <input id="outliers" type="range" min="0" max="40" step="1" value="10" />
-            <input id="outliers_num" type="number" min="0" max="40" step="1" value="10" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="outlierStrength">Outlier strength (simulated only)</label>
-          <div class="row">
-            <input id="outlierStrength" type="range" min="0.0" max="12.0" step="0.5" value="6.0" />
-            <input id="outlierStrength_num" type="number" min="0.0" max="12.0" step="0.5" value="6.0" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="seed">Simulation seed</label>
-          <div class="row">
-            <input id="seed" type="range" min="1" max="999" step="1" value="42" />
-            <input id="seed_num" type="number" min="1" max="999" step="1" value="42" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="analysisSeed">Analysis seed</label>
-          <div class="row">
-            <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
-            <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="distanceMetric">Distance explorer focus</label>
-          <select id="distanceMetric">
-            <option value="euclidean">Euclidean</option>
-            <option value="manhattan">Manhattan</option>
-            <option value="pearson">Pearson / correlation distance</option>
-            <option value="spearman">Spearman / rank distance</option>
-          </select>
-        </div>
-
-        <div class="control">
-          <label for="heatmapSize">Distance heatmap sample size</label>
-          <div class="row">
-            <input id="heatmapSize" type="range" min="12" max="40" step="2" value="20" />
-            <input id="heatmapSize_num" type="number" min="12" max="40" step="2" value="20" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="analysisSubset">MDS / clustering sample size</label>
-          <div class="row">
-            <input id="analysisSubset" type="range" min="30" max="120" step="5" value="80" />
-            <input id="analysisSubset_num" type="number" min="30" max="120" step="5" value="80" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="pcCount">Reduced-space component count</label>
-          <div class="row">
-            <input id="pcCount" type="range" min="2" max="5" step="1" value="3" />
-            <input id="pcCount_num" type="number" min="2" max="5" step="1" value="3" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="clusterMethod">Clustering method</label>
-          <select id="clusterMethod">
-            <option value="kmeans">K-means</option>
-            <option value="hierarchical">Hierarchical</option>
-          </select>
-        </div>
-
-        <div class="control">
-          <label for="clusterSpace">Clustering feature space</label>
-          <select id="clusterSpace">
-            <option value="original">Original scaled variables</option>
-            <option value="raw_pcs">Raw PCA scores</option>
-            <option value="rank_pcs">Rank PCA scores</option>
-          </select>
-        </div>
-
-        <div class="control">
-          <label for="clusterK">Number of clusters</label>
-          <div class="row">
-            <input id="clusterK" type="range" min="2" max="6" step="1" value="3" />
-            <input id="clusterK_num" type="number" min="2" max="6" step="1" value="3" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="validationMode">Validation mode</label>
-          <select id="validationMode">
-            <option value="holdout">Train / test split</option>
-            <option value="cv">k-fold cross-validation</option>
-          </select>
-        </div>
-
-        <div class="control">
-          <label for="testFraction">Test fraction (holdout only)</label>
-          <div class="row">
-            <input id="testFraction" type="range" min="0.15" max="0.40" step="0.05" value="0.25" />
-            <input id="testFraction_num" type="number" min="0.15" max="0.40" step="0.05" value="0.25" />
-          </div>
-        </div>
-
-        <div class="control">
-          <label for="cvFolds">CV folds</label>
-          <div class="row">
-            <input id="cvFolds" type="range" min="3" max="8" step="1" value="5" />
-            <input id="cvFolds_num" type="number" min="3" max="8" step="1" value="5" />
-          </div>
-        </div>
-
-        <div class="toggle-row">
-          <label><input id="colorSpecial" type="checkbox" checked /> Color outliers / classes</label>
-          <label><input id="showLabels" type="checkbox" checked /> Show loading labels</label>
-        </div>
-
-        <button id="rerun">Update</button>
-        <button id="presetLinear">Mostly linear</button>
-        <button id="presetNonlinear">Monotone nonlinear</button>
-        <button id="presetOutliers">Outlier-heavy</button>
 
         <div class="note" id="datasetNote">
           Simulated mode creates random data with one hidden driver, noise, monotone nonlinearity, and optional injected outliers.
@@ -190,6 +209,7 @@
       <div class="content-stack">
         <div class="card nav-card">
           <h2>Navigation</h2>
+          <div class="small" id="navHint">Suggested path: PCA core -> Distance Explorer -> MDS -> Clustering -> Supervised models.</div>
           <div class="nav-links">
             <a href="#pcaCore">PCA core</a>
             <a href="#distanceExplorer">Distance explorer</a>
@@ -204,6 +224,7 @@
         <section id="pcaCore" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Step 1</div>
               <h2>PCA core: raw values vs rank PCA</h2>
               <p class="section-copy">
                 This is the original app content. It compares PCA on standardized raw values with PCA after ranking each variable across observations.
@@ -297,6 +318,7 @@
         <section id="distanceExplorer" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Step 2</div>
               <h2>Distance explorer</h2>
               <p class="section-copy">
                 Distances describe how far observations are from each other before any low-dimensional projection. This section compares raw-value structure with rank-based structure.
@@ -343,6 +365,7 @@
         <section id="mdsSection" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Step 3</div>
               <h2>Classical MDS</h2>
               <p class="section-copy">
                 Classical multidimensional scaling starts from a distance matrix and places points so that distances in 2D stay as faithful as possible.
@@ -389,6 +412,7 @@
         <section id="clusteringSection" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Step 4</div>
               <h2>Clustering</h2>
               <p class="section-copy">
                 Clustering groups observations without using the class labels. You can cluster the original scaled variables, the raw PCA scores, or the rank PCA scores,
@@ -451,6 +475,7 @@
         <section id="supervisedSection" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Step 5</div>
               <h2>Supervised models and validation</h2>
               <p class="section-copy">
                 This compares simple classifiers on the original variables, the first <span id="pcCountInline">3</span> raw PCs, and the first <span id="pcCountInline2">3</span> rank PCs.
@@ -519,6 +544,7 @@
         <section id="factorSection" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Extension</div>
               <h2>Factor analysis vs PCA</h2>
               <p class="section-copy">
                 PCA explains total variance. Factor analysis tries to explain shared variance through latent common factors.
@@ -582,6 +608,7 @@
         <section id="caSection" class="card topic-section">
           <div class="section-head">
             <div>
+              <div class="section-kicker">Extension</div>
               <h2>Correspondence analysis demo</h2>
               <p class="section-copy">
                 Correspondence analysis is for contingency tables, not continuous variable matrices. It is useful when both rows and columns are categorical and you want a low-dimensional map of association patterns.

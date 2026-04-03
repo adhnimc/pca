@@ -91,8 +91,30 @@ h2, h3 {
   font-size: 20px;
 }
 
+.control-group {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.control-group:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.group-title {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
 .control {
   margin-bottom: 14px;
+  transition: opacity 0.15s ease;
 }
 
 .control label {
@@ -178,6 +200,7 @@ button:hover,
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: 10px;
 }
 
 .nav-links a {
@@ -193,6 +216,7 @@ button:hover,
 .topic-section {
   display: grid;
   gap: 16px;
+  scroll-margin-top: 20px;
 }
 
 .section-head {
@@ -207,6 +231,20 @@ button:hover,
   color: var(--muted);
   line-height: 1.5;
   max-width: 980px;
+}
+
+.section-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #eff6ff;
+  color: var(--accent);
+  border: 1px solid #bfdbfe;
 }
 
 .stats {
@@ -237,6 +275,19 @@ button:hover,
 .small-value {
   font-size: 18px;
   line-height: 1.25;
+}
+
+.is-disabled {
+  opacity: 0.42;
+}
+
+.is-disabled input,
+.is-disabled select {
+  pointer-events: none;
+}
+
+.tip-note {
+  margin-bottom: 14px;
 }
 
 .panel-grid {

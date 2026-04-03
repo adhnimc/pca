@@ -824,6 +824,66 @@
     }
   }
 
+  function getNodeList(selector) {
+    return document.querySelectorAll ? Array.from(document.querySelectorAll(selector)) : [];
+  }
+
+  function setGroupDisabled(selector, disabled) {
+    getNodeList(selector).forEach(el => {
+      if (el.classList && el.classList.toggle) {
+        el.classList.toggle("is-disabled", disabled);
+      } else if (el.classList && disabled && el.classList.add) {
+        el.classList.add("is-disabled");
+      } else if (el.classList && !disabled && el.classList.remove) {
+        el.classList.remove("is-disabled");
+      }
+      const children = el.querySelectorAll ? Array.from(el.querySelectorAll("input, select, button")) : [];
+      children.forEach(ctrl => {
+        ctrl.disabled = disabled;
+      });
+    });
+  }
+
+  function updateControlVisibility(meta) {
+    const isSimulated = meta.mode === "simulated";
+    const validationMode = document.getElementById("validationMode").value;
+    setGroupDisabled('[data-control-group="simulated"]', !isSimulated);
+    setGroupDisabled('[data-control-group="holdout"]', validationMode !== "holdout");
+    setGroupDisabled('[data-control-group="cv"]', validationMode !== "cv");
+
+    const presetButtons = ["presetLinear", "presetNonlinear", "presetOutliers"];
+    presetButtons.forEach(id => {
+      document.getElementById(id).disabled = !isSimulated;
+    });
+  }
+
+  function updateExploreGuide(meta) {
+    const datasetMode = document.getElementById("datasetMode").value;
+    const distanceMetric = document.getElementById("distanceMetric").value;
+    const clusterSpace = document.getElementById("clusterSpace").value;
+    const validationMode = document.getElementById("validationMode").value;
+    const guide = document.getElementById("exploreGuide");
+    const navHint = document.getElementById("navHint");
+
+    let guideText = "Start with PCA core, then move to Distance Explorer and MDS to see geometry, then use Clustering and Supervised Models to test whether the same structure is useful for grouping and prediction.";
+    if (datasetMode === "simulated") {
+      guideText += " In simulated mode, try switching between the nonlinear and outlier-heavy presets to see when rank methods become more stable than raw-value methods.";
+    } else if (datasetMode === "iris") {
+      guideText += " Iris is a good first real dataset because the class structure is clean enough to compare PCA, clustering, and classification side by side.";
+    } else if (datasetMode === "wine") {
+      guideText += " Wine is useful when you want more variables and more overlap, so the representation choices matter more.";
+    } else {
+      guideText += " Breast cancer is the strongest supervised-model demo here because the class boundary is fairly meaningful while still being multivariate.";
+    }
+
+    let navText = `Suggested path: PCA core -> Distance Explorer (${distanceMetricLabel(distanceMetric)}) -> MDS -> Clustering (${clusterSpace === "original" ? "original variables" : clusterSpace === "raw_pcs" ? "raw PCs" : "rank PCs"}) -> Supervised models (${validationMode === "holdout" ? "holdout" : "CV"}).`;
+    if (meta.mode === "simulated") {
+      navText += " The coloured points show outliers, while the supervised labels come from hidden low/mid/high latent groups.";
+    }
+    guide.textContent = guideText;
+    navHint.textContent = navText;
+  }
+
   function drawComparisonScatter(svgId, xVals, yVals, meta, xLabel, yLabel) {
     const svg = document.getElementById(svgId);
     svg.innerHTML = "";
@@ -2003,6 +2063,8 @@
 
   function update() {
     const meta = getActiveDataset();
+    updateControlVisibility(meta);
+    updateExploreGuide(meta);
     const maxPcs = Math.min(meta.p, 5);
     const rawPca = pca(meta.X, maxPcs);
     const rankInput = rankColumns(meta.X);
